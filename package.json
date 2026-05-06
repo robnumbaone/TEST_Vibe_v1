@@ -1,0 +1,39 @@
+{
+  "name": "vibe-v1",
+  "version": "0.1.0",
+  "description": "Template strutturato per progetti",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.sh",
+    "build": "echo 'Build script - configure based on your tech stack'",
+    "start": "node dist/index.js",
+    "test": "echo 'Test script - configure jest or vitest'",
+    "lint": "echo 'Lint script - configure eslint'",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "template",
+    "structured",
+    "project"
+  ],
+  "author": "robnumbaone",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": "eslint --fix",
+    "*.{js,ts,jsx,tsx,json,md}": "prettier --write"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

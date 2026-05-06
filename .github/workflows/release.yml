@@ -1,0 +1,45 @@
+name: Release & Versioning
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          semantic_version: 21
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+        continue-on-error: true
+
+      - name: Create Release Notes
+        if: success()
+        run: |
+          echo "## 🎉 New Release!"
+          echo "Version: ${{ env.NEW_RELEASE_VERSION }}"
+          echo "See [CHANGELOG.md](CHANGELOG.md) for details"

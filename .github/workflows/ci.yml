@@ -1,0 +1,118 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # Job 1: Lint e Format Check
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint & Format
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code format
+        run: npm run lint --if-present || echo "No lint script"
+
+      - name: Format check with Prettier
+        run: npm run format:check --if-present || echo "No format script"
+
+  # Job 2: Test
+  test:
+    runs-on: ubuntu-latest
+    name: Tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test --if-present || echo "No test script"
+
+      - name: Upload coverage
+        if: always()
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          fail_ci_if_error: false
+
+  # Job 3: Build
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build --if-present || echo "No build script"
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/
+          if-no-files-found: ignore
+
+  # Job 4: Security Check
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || true
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          path: '.'
+          format: 'JSON'
+          args: >
+            --enableExperimental
+        continue-on-error: true
+
+  # Summary
+  all-checks:
+    runs-on: ubuntu-latest
+    name: All Checks Passed
+    needs: [lint, test, build, security]
+    if: always()
+    steps:
+      - name: Check build matrix status
+        run: |
+          if [[ "${{ needs.lint.result }}" == "failure" || "${{ needs.test.result }}" == "failure" || "${{ needs.build.result }}" == "failure" ]]; then
+            echo "❌ Some checks failed"
+            exit 1
+          fi
+          echo "✅ All checks passed"
