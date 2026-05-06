@@ -25,6 +25,7 @@ Vedi [CLAUDE.md](./CLAUDE.md) per una guida completa su come è organizzato il p
 - **Architettura**: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 - **API**: [docs/API.md](./docs/API.md)
 - **Decisioni**: [docs/DECISIONS.md](./docs/DECISIONS.md)
+- **Staging**: [docs/STAGING.md](./docs/STAGING.md)
 
 ## Tech Stack
 
