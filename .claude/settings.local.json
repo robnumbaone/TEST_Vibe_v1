@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(chmod +x /Users/robertmursa/Desktop/VibeV1/scripts/setup.sh)",
-      "Bash(chmod +x /Users/robertmursa/Desktop/VibeV1/scripts/dev.sh)"
+      "Bash(chmod +x /Users/robertmursa/Desktop/VibeV1/scripts/dev.sh)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'ci: add comprehensive GitHub Actions automation *)"
     ]
   }
 }
